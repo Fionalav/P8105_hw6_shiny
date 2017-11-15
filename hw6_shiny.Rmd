@@ -21,7 +21,8 @@ library(shiny)
 instacart = 
   read_csv("../data/orders_train_allvars.csv") %>%
   clean_names() %>%
-  filter(department == c("bakery", "deli", "frozen", "produce"))
+  filter(department %in% c("bakery", "deli", "frozen", "produce")) %>%
+  select(department, product_name, order_dow, order_hour_of_day, aisle )
 
 ```
 
@@ -45,7 +46,7 @@ selectInput("Aisle", label = h3("Select Aisle"),
 dow = c( "sunday", "monday",  "tuesday", "wednesday",  "thursday",  "friday",  "saturday")
 
 
-radioButtons("day_of_week", label = h3("Select Day of Week"),
+selectInput("day_of_week", label = h3("Select Day of Week"),
             choices = dow, selected = "sunday")
 ```
 
@@ -63,7 +64,7 @@ instacart %>%
     group_by(department) %>%
     mutate(most_popular = product_name[which.max(orders)],
            orders = max(orders)) %>%
-  #filter(order_dow == input$day_of_week) %>%
+  filter(order_dow == input$day_of_week) %>%
   plot_ly( x = ~most_popular, y = ~orders, color = ~department, type = "bar")
 })
   
@@ -83,7 +84,7 @@ renderPlotly({
   ungroup(aisle) %>% 
   mutate(aisle = forcats::fct_reorder(aisle,iqr_hr_of_day)) %>%
   group_by(aisle) %>% 
-  filter(aisle == input$Aisle) %>%
+  filter(department == input$Department) %>%
   plot_ly(y = ~order_hour_of_day, color = ~aisle, type = "box",
           colors = "Set2")
 
