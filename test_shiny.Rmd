@@ -1,0 +1,101 @@
+---
+title: "HW6_Instacart"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row
+runtime: shiny
+---
+
+
+```{r setup}
+library(flexdashboard)
+library(tidyverse)
+library(janitor)
+library(stringr)
+library(forcats)
+library(viridis)
+library(plotly)
+library(shiny)
+```
+
+```{r load_data}
+instacart = 
+  read_csv("../data/orders_train_allvars.csv") %>%
+  clean_names() %>%
+  filter(department %in% c("bakery", "deli", "frozen", "produce"))
+
+instacart_a = 
+ instacart %>%
+    group_by(department, product_name) %>%
+    mutate(orders = n()) %>%
+    group_by(department) %>%
+    mutate(most_popular = product_name[which.max(orders)],
+           orders = max(orders)) 
+instacart_b = 
+ instacart %>%
+  group_by(aisle) %>%
+  mutate(iqr_hr_of_day = IQR(order_hour_of_day)) %>% 
+  ungroup(aisle) %>% 
+  mutate(aisle = forcats::fct_reorder(aisle,iqr_hr_of_day)) %>%
+  group_by(aisle) 
+
+instacart_c = 
+ instacart %>% 
+  group_by(department, order_dow) %>%
+  mutate(orders = n()) %>%
+    ungroup(order_dow) %>%
+  mutate(order_dow = as.factor(order_dow)) %>%
+  mutate(order_dow = recode(order_dow,"0" = "sunday", "1" = "monday", "2" = "tuesday", "3" = "wednesday", "4" = "thursday", "5" = "friday", "6" = "saturday"))
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+
+```{r  selectInput_widget}
+department = c("bakery", "deli", "frozen", "produce")
+radioButtons("Department", label = h3("Select Department"),
+            choices = department, selected = "bakery")
+```
+
+
+```{r radioButtons_widget3}
+dow = c( "sunday", "monday",  "tuesday", "wednesday",  "thursday",  "friday",  "saturday")
+
+
+radioButtons("day_of_week", label = h3("Select Day of Week"),
+            choices = dow, selected = "sunday")
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Chart A
+
+
+
+Row {.tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+renderPlotly({ 
+  instacart_b  %>% 
+  filter(department == input$Department) %>%
+  plot_ly(y = ~order_hour_of_day, color = ~aisle, type = "box",
+          colors = "Set2")
+})
+
+```
+
+### Chart C
+```{r}
+renderPlotly({
+instacart_c %>%
+  filter(order_dow == input$day_of_week) %>%
+  plot_ly(y = ~orders, x = ~order_dow, color = ~department, type = "bar",
+          colors = "Set3")
+})
+```
+
