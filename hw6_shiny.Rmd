@@ -57,19 +57,18 @@ Row
 ```{r A Bar graph of most popular product in each deparment}
 renderPlotly({ 
 instacart %>%
-    filter(department %in% c("bakery", "deli", "frozen", "produce")) %>%
-    group_by(department, product_name) %>%
+    group_by(department, order_dow) %>%
     mutate(orders = n()) %>%
-    group_by(department) %>%
+    #group_by(department) %>%
     mutate(most_popular = product_name[which.max(orders)],
            orders = max(orders)) %>%
+    ungroup(order_dow) %>%
     mutate(order_dow = recode(order_dow,"0" = "sunday", "1" = "monday", "2" = "tuesday", "3" = "wednesday", "4" = "thursday", "5" = "friday", "6" = "saturday")) %>%
-
+    mutate(most_popular = fct_reorder(most_popular, orders)) %>%
   filter(order_dow == input$day_of_week) %>%
   plot_ly( x = ~most_popular, y = ~orders, color = ~department, type = "bar")
 })
   
-
 ```
 
 Row {.tabset .tabset-fade}
