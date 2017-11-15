@@ -22,8 +22,7 @@ instacart =
   read_csv("../data/orders_train_allvars.csv") %>%
   clean_names() %>%
   filter(department %in% c("bakery", "deli", "frozen", "produce")) %>%
-  select(department, product_name, order_dow, order_hour_of_day, aisle )
-
+  select(department, product_name, order_dow, order_hour_of_day, aisle ) 
 ```
 
 Column {.sidebar}
@@ -64,6 +63,8 @@ instacart %>%
     group_by(department) %>%
     mutate(most_popular = product_name[which.max(orders)],
            orders = max(orders)) %>%
+    mutate(order_dow = recode(order_dow,"0" = "sunday", "1" = "monday", "2" = "tuesday", "3" = "wednesday", "4" = "thursday", "5" = "friday", "6" = "saturday")) %>%
+
   filter(order_dow == input$day_of_week) %>%
   plot_ly( x = ~most_popular, y = ~orders, color = ~department, type = "bar")
 })
