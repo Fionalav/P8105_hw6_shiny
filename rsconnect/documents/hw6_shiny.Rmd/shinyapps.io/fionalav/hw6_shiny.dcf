@@ -5,8 +5,8 @@ account: fionalav
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 235973
-bundleId: 1078110
+bundleId: 1078181
 url: https://fionalav.shinyapps.io/hw6_shiny/
-when: 1510803161.61107
+when: 1510806380.03522
 asMultiple: FALSE
 asStatic: FALSE

@@ -30,6 +30,8 @@ instacart =
 Column {.sidebar}
 -----------------------------------------------------------------------
 
+This `flexdashboard` with Shiny was made for P8105 Data Science I - HW6 Interactivity Project. The data come from “The Instacart Online Grocery Shopping Dataset 2017”.  Download the data used for this app [here](http://jeffgoldsmith.com/DSI/data/instacart_train_data.csv.zip)
+
 ```{r radioButtons_widget}
 dow = c( "sunday", "monday",  "tuesday", "wednesday",  "thursday",  "friday",  "saturday")
 
